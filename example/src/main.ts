@@ -7,4 +7,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-new LuckyWheel("canvas").draw(0)
+new LuckyWheel("canvas")
