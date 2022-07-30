@@ -1,4 +1,5 @@
 mod browser;
+mod render_loop;
 mod renderer;
 mod utils;
 
@@ -6,6 +7,7 @@ use core::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 
+use render_loop::RenderLoop;
 use renderer::Renderer;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -16,36 +18,29 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub struct LuckyWheel {
-    renderer: Renderer,
+    renderer: Rc<RefCell<Renderer>>,
 }
 
 #[wasm_bindgen]
 impl LuckyWheel {
     #[wasm_bindgen(constructor)]
     pub fn new(canvas_id: &str) -> LuckyWheel {
-        let renderer = Renderer::new(canvas_id);
-        renderer.draw(0);
+        let renderer = Rc::new(RefCell::new(Renderer::new(canvas_id)));
+        renderer.borrow().draw(0.0);
 
         LuckyWheel { renderer }
     }
-}
 
-#[wasm_bindgen]
-pub fn start() -> Result<(), JsValue> {
-    utils::set_panic_hook();
-    let mut degree = 0;
+    pub fn start(&self) {
+        let render_loop: Rc<RefCell<RenderLoop>> =
+            Rc::new(RefCell::new(RenderLoop::new(self.renderer.clone())));
 
-    let f = Rc::new(RefCell::new(None));
-    let g = f.clone();
-
-    *g.borrow_mut() = Some(Closure::new(move || {
-        degree += 1;
-        web_sys::console::log_1(&JsValue::from(degree));
-
-        browser::request_animation_frame(f.borrow().as_ref().unwrap());
-    }));
-
-    browser::request_animation_frame(g.borrow().as_ref().unwrap());
-
-    Ok(())
+        render_loop.borrow_mut().closure = Some({
+            let render_loop = render_loop.clone();
+            Closure::wrap(Box::new(move || {
+                render_loop.borrow_mut().render_loop();
+            }))
+        });
+        render_loop.borrow_mut().render_loop();
+    }
 }

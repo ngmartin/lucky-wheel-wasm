@@ -60,7 +60,7 @@ impl Renderer {
         }
     }
 
-    pub fn draw(&self, degree: u16) {
+    pub fn draw(&self, degree: f64) {
         let mut i = 0.0;
 
         for item in &self.items {

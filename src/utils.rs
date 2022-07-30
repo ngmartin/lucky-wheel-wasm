@@ -11,8 +11,8 @@ pub fn set_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-pub fn degree_to_radian(degree: u16) -> f64 {
-    (2.0 * f64::consts::PI / 360.0) * degree as f64
+pub fn degree_to_radian(degree: f64) -> f64 {
+    (2.0 * f64::consts::PI / 360.0) * degree
 }
 
 pub fn round_radian(radian: f64) -> f64 {
