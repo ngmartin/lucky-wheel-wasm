@@ -42,6 +42,6 @@ impl LuckyWheel {
                 render_loop.borrow_mut().render_loop();
             }))
         });
-        render_loop.borrow_mut().render_loop();
+        render_loop.borrow_mut().start();
     }
 }
