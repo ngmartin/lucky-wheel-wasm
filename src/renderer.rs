@@ -1,4 +1,5 @@
 use crate::browser;
+use crate::item::Items;
 use crate::utils;
 
 use std::f64;
@@ -6,34 +7,15 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
-struct ItemConfig {
-    color: String,
-    label: String,
-}
-
 pub struct Renderer {
     radius: f64,
     context: CanvasRenderingContext2d,
-    angle: f64,
-    items: Vec<ItemConfig>,
+    config_items: Items,
 }
 
 impl Renderer {
     pub fn new(canvas_id: &str) -> Renderer {
-        let items = vec![
-            ItemConfig {
-                color: String::from("#f82"),
-                label: String::from("test1"),
-            },
-            ItemConfig {
-                color: String::from("#0bf"),
-                label: String::from("test2"),
-            },
-            ItemConfig {
-                color: String::from("#fb0"),
-                label: String::from("test3"),
-            },
-        ];
+        let config_items = Items::new();
 
         let document = browser::document();
         let canvas = document.get_element_by_id(canvas_id).unwrap();
@@ -50,23 +32,23 @@ impl Renderer {
             .unwrap();
         let diameter = context.canvas().unwrap().width() as f64;
         let radius = diameter / 2.0;
-        let angle = 2.0 * f64::consts::PI / items.len() as f64;
+        // let angle = 2.0 * f64::consts::PI / items.len() as f64;
 
         Renderer {
             context,
             radius,
-            angle,
-            items,
+            config_items,
         }
     }
 
     pub fn draw(&self, degree: f64) {
-        let mut i = 0.0;
-
-        for item in &self.items {
-            let start_ang = utils::round_radian(self.angle * i + utils::degree_to_radian(degree));
-            let end_ang = utils::round_radian(start_ang + self.angle);
-            i += 1.0;
+        for item in &self.config_items.items {
+            let start_ang = utils::round_radian(
+                utils::degree_to_radian(item.start_degree) + utils::degree_to_radian(degree),
+            );
+            let end_ang = utils::round_radian(
+                utils::degree_to_radian(item.end_degree) + utils::degree_to_radian(degree),
+            );
 
             self.context.save();
             // color
@@ -80,7 +62,11 @@ impl Renderer {
             self.context.fill();
             // text
             self.context.translate(self.radius, self.radius).unwrap();
-            self.context.rotate(start_ang + self.angle / 2.0).unwrap();
+            self.context
+                .rotate(
+                    start_ang + utils::degree_to_radian(item.end_degree - item.start_degree) / 2.0,
+                )
+                .unwrap();
             self.context.set_text_align("right");
             self.context.set_fill_style(&"#fff".into());
             self.context.set_font("bold 30px sans-serif");
