@@ -5,20 +5,20 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 
-const MAX_VELOCITY: f64 = 6.0;
-const DURATION: u8 = 6;
-const FPS: u8 = 60;
+const MAX_VELOCITY: f64 = 15.0;
+const MIN_VELOCITY: f64 = 0.2;
+const DURATION: f64 = 6.0 * 360.0;
+const DEGREE_DELTA: f64 = 5.0;
 
 pub struct RenderLoop {
     renderer: Rc<RefCell<Renderer>>,
     degree: f64,
     animation_id: Option<i32>,
     pub closure: Option<Closure<dyn FnMut()>>,
-    tick: u32,
-    half_second: u32,
     velocity: f64,
     stoped_degree: f64,
-    is_stopping: bool,
+    is_starting: bool,
+    duration: f64,
 }
 
 impl RenderLoop {
@@ -28,25 +28,30 @@ impl RenderLoop {
             closure: None,
             animation_id: None,
             degree: 0.0,
-            tick: 0,
-            half_second: 0,
             velocity: MAX_VELOCITY,
             stoped_degree: 0.0,
-            is_stopping: false,
+            is_starting: false,
+            duration: DURATION,
         }
     }
 
     pub fn render_loop(&mut self) {
-        if !self.is_stopping {
-            self.velocity = ((DURATION * 2) as u32 - self.half_second) as f64 * MAX_VELOCITY
-                / (DURATION * 2) as f64;
-
-            if self.velocity < 0.5 {
-                self.velocity = 0.5;
-                self.is_stopping = true;
+        if self.is_starting {
+            if self.stoped_degree >= self.degree - DEGREE_DELTA
+                && self.stoped_degree <= self.degree + DEGREE_DELTA
+            {
+                self.degree = self.stoped_degree;
+                self.is_starting = false;
             }
         } else {
-            if self.degree.floor() == self.stoped_degree.floor() {
+            self.duration = self.duration - self.velocity;
+            self.velocity = self.duration * MAX_VELOCITY / DURATION;
+
+            if self.velocity < MIN_VELOCITY {
+                self.velocity = MIN_VELOCITY
+            }
+
+            if self.duration <= 0.0 {
                 self.velocity = 0.0;
                 self.stop();
             }
@@ -60,15 +65,13 @@ impl RenderLoop {
         } else {
             None
         };
-
-        self.tick();
     }
 
     pub fn start(&mut self, stoped_degree: f64) {
         self.stoped_degree = stoped_degree;
         self.velocity = MAX_VELOCITY;
-        self.half_second = 0;
-        self.is_stopping = false;
+        self.is_starting = true;
+        self.duration = DURATION;
 
         self.render_loop();
     }
@@ -82,14 +85,5 @@ impl RenderLoop {
 
     fn add_degree(&mut self, degree: f64) {
         self.degree = (self.degree + degree) % 360.0;
-    }
-
-    fn tick(&mut self) {
-        self.tick += 1;
-
-        if self.tick >= (FPS / 2).into() {
-            self.tick = 0;
-            self.half_second += 1;
-        }
     }
 }

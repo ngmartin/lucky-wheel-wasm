@@ -18,7 +18,9 @@ pub struct Renderer {
 impl Renderer {
     pub fn new(canvas_id: &str, items: Rc<RefCell<Items>>) -> Renderer {
         let document = browser::document();
-        let canvas = document.get_element_by_id(canvas_id).unwrap();
+        let canvas = document
+            .get_element_by_id(canvas_id)
+            .expect("canvas id not found");
         let canvas: HtmlCanvasElement = canvas
             .dyn_into::<HtmlCanvasElement>()
             .map_err(|_| ())
@@ -26,7 +28,7 @@ impl Renderer {
 
         let context = canvas
             .get_context("2d")
-            .unwrap()
+            .expect("get context 2d fail")
             .unwrap()
             .dyn_into::<CanvasRenderingContext2d>()
             .unwrap();
