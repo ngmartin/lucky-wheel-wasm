@@ -54,6 +54,7 @@ impl RenderLoop {
             if self.duration <= 0.0 {
                 self.velocity = 0.0;
                 self.stop();
+                return;
             }
         }
 
@@ -64,7 +65,7 @@ impl RenderLoop {
             Some(browser::request_animation_frame(closure))
         } else {
             None
-        };
+        }
     }
 
     pub fn start(&mut self, stoped_degree: f64) {
