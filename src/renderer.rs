@@ -2,7 +2,9 @@ use crate::browser;
 use crate::item::Items;
 use crate::utils;
 
+use core::cell::RefCell;
 use std::f64;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
@@ -10,13 +12,11 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 pub struct Renderer {
     radius: f64,
     context: CanvasRenderingContext2d,
-    config_items: Items,
+    config_items: Rc<RefCell<Items>>,
 }
 
 impl Renderer {
-    pub fn new(canvas_id: &str) -> Renderer {
-        let config_items = Items::new();
-
+    pub fn new(canvas_id: &str, items: Rc<RefCell<Items>>) -> Renderer {
         let document = browser::document();
         let canvas = document.get_element_by_id(canvas_id).unwrap();
         let canvas: HtmlCanvasElement = canvas
@@ -32,17 +32,16 @@ impl Renderer {
             .unwrap();
         let diameter = context.canvas().unwrap().width() as f64;
         let radius = diameter / 2.0;
-        // let angle = 2.0 * f64::consts::PI / items.len() as f64;
 
         Renderer {
             context,
             radius,
-            config_items,
+            config_items: items,
         }
     }
 
     pub fn draw(&self, degree: f64) {
-        for item in &self.config_items.items {
+        for item in &self.config_items.borrow().items {
             let start_ang = utils::round_radian(
                 utils::degree_to_radian(item.start_degree) + utils::degree_to_radian(degree),
             );

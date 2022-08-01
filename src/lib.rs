@@ -8,6 +8,7 @@ use core::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 
+use item::Items;
 use render_loop::RenderLoop;
 use renderer::Renderer;
 
@@ -20,16 +21,18 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 #[wasm_bindgen]
 pub struct LuckyWheel {
     renderer: Rc<RefCell<Renderer>>,
+    items: Rc<RefCell<Items>>,
 }
 
 #[wasm_bindgen]
 impl LuckyWheel {
     #[wasm_bindgen(constructor)]
     pub fn new(canvas_id: &str) -> LuckyWheel {
-        let renderer = Rc::new(RefCell::new(Renderer::new(canvas_id)));
+        let items = Rc::new(RefCell::new(Items::new()));
+        let renderer = Rc::new(RefCell::new(Renderer::new(canvas_id, items.clone())));
         renderer.borrow().draw(0.0);
 
-        LuckyWheel { renderer }
+        LuckyWheel { renderer, items }
     }
 
     pub fn start(&self) {
@@ -42,6 +45,8 @@ impl LuckyWheel {
                 render_loop.borrow_mut().render_loop();
             }))
         });
-        render_loop.borrow_mut().start();
+        render_loop
+            .borrow_mut()
+            .start(self.items.borrow().get_stoped_offset_degree(2));
     }
 }

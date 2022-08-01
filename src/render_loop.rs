@@ -17,6 +17,8 @@ pub struct RenderLoop {
     tick: u32,
     half_second: u32,
     velocity: f64,
+    stoped_degree: f64,
+    is_stopping: bool,
 }
 
 impl RenderLoop {
@@ -29,15 +31,25 @@ impl RenderLoop {
             tick: 0,
             half_second: 0,
             velocity: MAX_VELOCITY,
+            stoped_degree: 0.0,
+            is_stopping: false,
         }
     }
 
     pub fn render_loop(&mut self) {
-        if self.half_second <= (DURATION * 2).into() {
+        if !self.is_stopping {
             self.velocity = ((DURATION * 2) as u32 - self.half_second) as f64 * MAX_VELOCITY
                 / (DURATION * 2) as f64;
+
+            if self.velocity < 0.5 {
+                self.velocity = 0.5;
+                self.is_stopping = true;
+            }
         } else {
-            self.stop();
+            if self.degree.floor() == self.stoped_degree.floor() {
+                self.velocity = 0.0;
+                self.stop();
+            }
         }
 
         self.renderer.borrow().draw(self.degree);
@@ -52,9 +64,11 @@ impl RenderLoop {
         self.tick();
     }
 
-    pub fn start(&mut self) {
+    pub fn start(&mut self, stoped_degree: f64) {
+        self.stoped_degree = stoped_degree;
         self.velocity = MAX_VELOCITY;
         self.half_second = 0;
+        self.is_stopping = false;
 
         self.render_loop();
     }

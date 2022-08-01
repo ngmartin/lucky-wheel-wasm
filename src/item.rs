@@ -1,4 +1,5 @@
 pub struct Item {
+    pub id: u32,
     pub color: String,
     pub label: String,
     pub start_degree: f64,
@@ -13,18 +14,21 @@ impl Items {
     pub fn new() -> Items {
         let config_items = vec![
             Item {
+                id: 0,
                 color: String::from("#f82"),
                 label: String::from("test1"),
                 start_degree: 0.0,
                 end_degree: 0.0,
             },
             Item {
+                id: 1,
                 color: String::from("#0bf"),
                 label: String::from("test2"),
                 start_degree: 0.0,
                 end_degree: 0.0,
             },
             Item {
+                id: 2,
                 color: String::from("#fb0"),
                 label: String::from("test3"),
                 start_degree: 0.0,
@@ -43,6 +47,7 @@ impl Items {
                 index += 1;
 
                 Item {
+                    id: el.id,
                     color: el.color.clone(),
                     label: el.label.clone(),
                     start_degree,
@@ -52,5 +57,16 @@ impl Items {
             .collect();
 
         Items { items }
+    }
+
+    pub fn get_stoped_offset_degree(&self, id: u32) -> f64 {
+        let item = self.items.iter().find(|&el| el.id == id);
+
+        if let Some(item) = item {
+            let avg_degree = (item.start_degree + item.end_degree) / 2.0;
+            return 360.0 - avg_degree;
+        }
+
+        0.0
     }
 }
