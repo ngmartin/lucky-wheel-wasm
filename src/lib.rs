@@ -1,5 +1,6 @@
 mod browser;
 mod item;
+mod random;
 mod render_loop;
 mod renderer;
 mod utils;
@@ -48,10 +49,11 @@ impl LuckyWheel {
             }))
         });
 
+        let item_id = random::rand(&self.items.borrow().items);
         let degree = self
             .items
             .borrow()
-            .get_stoped_offset_degree(1)
+            .get_stoped_offset_degree(item_id)
             .expect("item id not found");
         render_loop.borrow_mut().start(degree);
     }

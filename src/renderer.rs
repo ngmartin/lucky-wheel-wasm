@@ -28,7 +28,7 @@ impl Renderer {
 
         let context = canvas
             .get_context("2d")
-            .expect("get context 2d fail")
+            .expect("get context 2d failed")
             .unwrap()
             .dyn_into::<CanvasRenderingContext2d>()
             .unwrap();

@@ -4,6 +4,7 @@ pub struct Item {
     pub label: String,
     pub start_degree: f64,
     pub end_degree: f64,
+    pub weight: i32,
 }
 
 pub struct Items {
@@ -19,6 +20,7 @@ impl Items {
                 label: String::from("test1"),
                 start_degree: 0.0,
                 end_degree: 0.0,
+                weight: 1,
             },
             Item {
                 id: 1,
@@ -26,6 +28,7 @@ impl Items {
                 label: String::from("test2"),
                 start_degree: 0.0,
                 end_degree: 0.0,
+                weight: 1,
             },
             Item {
                 id: 2,
@@ -33,6 +36,7 @@ impl Items {
                 label: String::from("test3"),
                 start_degree: 0.0,
                 end_degree: 0.0,
+                weight: 1,
             },
         ];
 
@@ -52,6 +56,7 @@ impl Items {
                     label: el.label.clone(),
                     start_degree,
                     end_degree,
+                    weight: el.weight,
                 }
             })
             .collect();
