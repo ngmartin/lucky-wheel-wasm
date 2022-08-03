@@ -3,6 +3,7 @@ mod item;
 mod random;
 mod render_loop;
 mod renderer;
+mod spinning;
 mod utils;
 
 use core::cell::RefCell;
