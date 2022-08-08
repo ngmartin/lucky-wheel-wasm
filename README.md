@@ -23,7 +23,7 @@
 wasm-pack build
 ```
 
-### Run example of using lucky-wheel-wasm
+### Run example of using `lucky-wheel-wasm`
 
 ```
 cd example
