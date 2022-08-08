@@ -2,7 +2,7 @@
 
   <h1><code>lucky-wheel-wasm</code></h1>
 
-  <strong>This is a project that build in WebAssembly and Rust. Using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+  <strong>This is a project built on WebAssembly and Rust. Using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
 
   <p>Just an example of how to build a WebAssembly project. Audio editing, video editing, image processing can achieve better performance in WebAssembly than in Javascript.</p>
 
@@ -24,6 +24,7 @@ wasm-pack build
 ```
 
 ### Run example of using lucky-wheel-wasm
+
 ```
 cd example
 
