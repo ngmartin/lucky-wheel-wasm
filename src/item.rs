@@ -64,12 +64,12 @@ impl Items {
         Items { items }
     }
 
-    pub fn get_stoped_offset_degree(&self, id: u32) -> Result<f64, ()> {
+    pub fn get_stoped_offset_degree(&self, id: u32) -> Result<u32, ()> {
         let item = self.items.iter().find(|&el| el.id == id);
 
         if let Some(item) = item {
             let avg_degree = (item.start_degree + item.end_degree) / 2.0;
-            return Ok(360.0 - avg_degree);
+            return Ok(360 - avg_degree as u32);
         }
 
         Err(())
