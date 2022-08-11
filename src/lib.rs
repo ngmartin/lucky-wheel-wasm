@@ -50,11 +50,19 @@ impl LuckyWheel {
             }))
         });
 
-        let item_id = random::rand(&self.items.borrow().items);
+        let random_items = self
+            .items
+            .borrow()
+            .items
+            .iter()
+            .map(|el| (el.id, el.weight))
+            .collect::<Vec<_>>();
+        let random_item = random::rand(&random_items);
+
         let degree = self
             .items
             .borrow()
-            .get_stoped_offset_degree(item_id)
+            .get_stoped_offset_degree(random_item.0)
             .expect("item id not found");
         render_loop.borrow_mut().start(degree);
     }

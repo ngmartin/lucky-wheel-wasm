@@ -4,7 +4,7 @@ pub struct Item {
     pub label: String,
     pub start_degree: f64,
     pub end_degree: f64,
-    pub weight: i32,
+    pub weight: u32,
 }
 
 pub struct Items {
