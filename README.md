@@ -33,8 +33,20 @@ yarn add file:../pkg
 yarn dev
 ```
 
+### Unit tests
+
+```
+cargo test
+```
+
 ### Test in Headless Browsers with `wasm-pack test`
 
 ```
 wasm-pack test --headless --firefox
+```
+
+### Code coverage
+
+```
+cargo tarpaulin
 ```
